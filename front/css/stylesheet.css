@@ -1,0 +1,7 @@
+.card-img {
+    width: 150px;
+    height: 150px;
+}
+input[type="number"] {
+    max-width: 40px; /* Adjust the width as needed */
+  }
