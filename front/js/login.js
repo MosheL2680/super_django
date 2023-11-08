@@ -13,15 +13,12 @@ const login = async () => {
     password: password,
   };
 
-  res = await axios.post("http://127.0.0.1:8000/login/", loginData)//send username & pass to server
+  res = await axios.post("https://super-django-1.onrender.com/login/", loginData)//send username & pass to server
     .then((res) => {
       const token = res.data.access;
       sessionStorage.setItem('token', token);//save access token to sessionstorage
       user=parseJwt(token).username//get user from token decoding by "parseJwt()" (at "jener.js")
-      showSuccessNotification(`You are logged in now ${user}`);
-      setTimeout(() => {
-        window.location.href = "index.html";
-      }, 2000);//take user back to the shop
+      changePageSuccess('index.html',`You are logged in now ${user}`)
     })
     .catch((error) => {
       console.log(error);
@@ -48,7 +45,7 @@ const register = async () => {
   };
 
   try {
-    await axios.post("http://127.0.0.1:8000/register", registerData);//send username & pass to server
+    await axios.post("https://super-django-1.onrender.com/register", registerData);//send username & pass to server
     showSuccessNotification("User created successfully");
   } catch (error) {
     if (error.response && error.response.status === 500) {

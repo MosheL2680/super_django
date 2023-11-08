@@ -1,7 +1,7 @@
 let cart = []
 const cartData = JSON.parse(localStorage.getItem("cart"));
 let total = 0;
-const MY_SERVER = "http://127.0.0.1:8000/"
+const MY_SERVER = "https://super-django-1.onrender.com/"
 const token = sessionStorage.getItem("token") || null
 const tokenData = {
   "Content-Type": "application/json",
@@ -22,7 +22,7 @@ const loadCart = () => {
 // Display cart
 const displayCart = () => {
   if (cart.length === 0 || !cart) {
-    changePage('index.html', 'your cart is empty')
+    changePageError('index.html', 'your cart is empty')
   }
   total = 0;
   cartDisplay.innerHTML = `<div class="row row-cols-1 row-cols-md-6 g-4">` + cart.map((item, ind) => {

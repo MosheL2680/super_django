@@ -2,7 +2,7 @@ let products = []
 let cart = []
 const cartData = JSON.parse(localStorage.getItem("cart"));
 let total = 0;
-const MY_SERVER = "http://127.0.0.1:8000/"
+const MY_SERVER = "https://super-django-1.onrender.com/"
 const token = sessionStorage.getItem("token") || null
 const tokenData = {
   "Content-Type": "application/json",
