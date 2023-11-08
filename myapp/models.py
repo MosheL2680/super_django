@@ -33,14 +33,17 @@ class Order(models.Model):
     def __str__(self):
         return f'oreder {self.id}'
     
-class OrederDetails(models.Model):
+class OrederDetail(models.Model):
     id = models.AutoField(primary_key=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()  
-      
+    quantity = models.PositiveIntegerField() 
+          
     def __str__(self):
         return f'order details {self.id}'
+    
+    def total_price(self):
+        return self.product.price * self.quantity
     
     
     

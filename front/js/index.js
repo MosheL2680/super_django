@@ -3,6 +3,13 @@ let cart = []
 const cartData = JSON.parse(localStorage.getItem("cart"));
 let total = 0;
 const MY_SERVER = "http://127.0.0.1:8000/"
+const token = sessionStorage.getItem("token") || null
+const tokenData = {
+  "Content-Type": "application/json",
+  "Authorization": "Bearer " + token,
+}
+// const current_user=parseJwt(token).username || null
+
 
 
 // Load products from server (and call for display)
@@ -33,30 +40,19 @@ const displayProducts = async () => {
 const loadCart = () => {
   if (cartData != null) {
     cart = cartData
-    displayCart()
   }
+  displayCartLink()
 }
 
-// Display cart
-const displayCart = () => {
-  total = 0;
-  cartDisplay.innerHTML = `<div class="row row-cols-1 row-cols-md-6 g-4">` + cart.map((item, ind) => {
-    total += parseInt(item.price) * parseInt(item.amount);//calc total price
-    return `
-      <div class="col">
-        <div class="card text-bg-secondary mb-1"  >
-          <img src="../static${item.img}" class="card-img card-img-top" alt="...">
-          <div class="card-body">
-            <h5 class="card-title">${item.desc} ${item.price}$</h5>
-            <p class="card-text">amount: ${item.amount}</p>
-            <button onclick="remove(${item.id})">Remove</button>
-          </div>
-        </div>
-      </div>`;
-  });
-  totalPrice.innerHTML = `<br><h5>Total price: ${total}$</h5>`;//display total outside loop
-}
-
+const displayCartLink = () => {
+  const yourCartElement = document.getElementById("yourCart");
+  if (yourCartElement) {
+    if (cart.length === 0 || !cart) {
+      yourCartElement.innerHTML = "your cart(0)";
+    }
+    else yourCartElement.innerHTML = `your cart(${cart.length})`;
+  }
+};
 // Add item to cart and save cart in localstorage
 const buy = async (ind) => {
   const product = products[ind]
@@ -73,45 +69,52 @@ const buy = async (ind) => {
 
   localStorage.setItem("cart", JSON.stringify(cart))//save cart to localstorage
   showSuccessNotification("Item added to cart")
-  displayCart()
+  displayCartLink()
 }
 
-// Remove item from cart list
-const remove = (id) => {
-  cart = cart.filter(item => item.id !== id);//gives a new cart without this item
-  localStorage.setItem("cart", JSON.stringify(cart));//save updated cart to localstorage
-  showErrorNotification("Itam removed from cart")
-  displayCart()
-}
-
-// checkout - Send cart to server
-const checkOut = async () => {
-  if (cart.length === 0) {
-    showErrorNotification("Your cart is empty. Add items before checking out.");
-    return;//exit function if cart is empty
-  }
-  const userConfirmed = confirm("Are you sure you want to check out?");//ask user to confirm checkout
-  if (userConfirmed) {
-    const token = sessionStorage.getItem("token");//get token from sessionstorage
-    const headersData = {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + token,
-    }
-    try {
-      let response = await axios.post(MY_SERVER + "checkout", { cart: cartData }, { headers: headersData });//send cart and token to server
-      if (response.data === "order saved fucking successfuly") {
-        localStorage.removeItem("cart");//delete cart from localstorage
-        cart = []//clear cart var
-        showSuccessNotification(`chckout successfuly. you need to pay ${total}$`)
+// Display order history in the div
+const displayOrderHistory = () => {
+  axios.get(MY_SERVER + 'history', { headers: tokenData })
+    .then((response) => {
+      const orderHistory = response.data.orders;
+      if (orderHistory.length === 0) {
+        showErrorNotification("No history of orders. Lets create new history:)")
+        return
       }
-    } catch (error) {
+      orderHistory.reverse()//to get last one first
+      user = parseJwt(token).username || null
+      // Build the HTML content for displaying order history
+      displayy.innerHTML = ''
+      displayy.innerHTML = `
+        <h1>your order history, ${user}</h1>
+        <ul>
+          ${orderHistory.map(order => `
+            <li>
+              <strong>Order Date:</strong> ${order.order_date}<br>
+              <strong>Products:</strong>
+              <ul>
+                ${order.order_details.map(detail => `
+                  <li>
+                    Product: ${detail.product_desc}<br>
+                    Quantity: ${detail.quantity}
+                  </li>
+                `).join('')}
+              </ul>
+            </li>
+          `).join('')}
+        </ul>
+      `;
+
+      // Set the content of the order history div
+      orderHistoryDiv.innerHTML = orderHistoryHtml;
+    })
+    .catch((error) => {
       if (error.response.status === 401) {
         showErrorNotification("Unauthorized. Please log in")
         setTimeout(() => {
           window.location.href = "login.html";
         }, 2000);//take user to login page if unauthorized
       }
-      else console.log("Failed to perform the checkout.");
-    }
-  }
+      console.error('Error fetching order history:', error);
+    });
 }

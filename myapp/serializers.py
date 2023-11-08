@@ -1,5 +1,7 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Category, Product, Order, OrederDetails
+from rest_framework import serializers
+from .models import Category, Product, Order, OrederDetail
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 # serializers for my 4 models
@@ -18,8 +20,26 @@ class OrderSerializer(ModelSerializer):
     class Meta:
         model = Order
         fields = '__all__'
-        
-class OrderDetailsSerializer(ModelSerializer):
+    def create(self, validated_data):
+        user = self.context['user']
+        print(user)
+        return Order.objects.create(**validated_data,user=user)
+    
+    
+class OrderDetailSerializer(serializers.ModelSerializer):
     class Meta:
-        model = OrederDetails
+        model = OrederDetail
         fields = '__all__'
+        
+        
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        # Add custom columns (user return payload - when login )
+        token['username'] = user.username
+        token['emaillll'] = user.email
+        token['blabla'] = "waga baga bbb"
+        # ...
+        return token

@@ -13,16 +13,18 @@ const login = async () => {
     password: password,
   };
 
-  axios.post("http://127.0.0.1:8000/login/", loginData)//send username & pass to server
-    .then((response) => {
-      const token = response.data.access;
+  res = await axios.post("http://127.0.0.1:8000/login/", loginData)//send username & pass to server
+    .then((res) => {
+      const token = res.data.access;
       sessionStorage.setItem('token', token);//save access token to sessionstorage
-      showSuccessNotification("You are logged in now");
+      user=parseJwt(token).username//get user from token decoding by "parseJwt()" (at "jener.js")
+      showSuccessNotification(`You are logged in now ${user}`);
       setTimeout(() => {
         window.location.href = "index.html";
       }, 2000);//take user back to the shop
     })
     .catch((error) => {
+      console.log(error);
       showErrorNotification("Username or password isn't correct");//tostify if server dosn't recognize user
     });
 };
@@ -32,6 +34,7 @@ const login = async () => {
 const register = async () => {
   const username = uName.value.trim();
   const password = pass.value.trim();
+  const email = mail.value.trim()||null
 
   if (!username || !password) {
     showErrorNotification("Please enter both a username and a password.");
@@ -41,6 +44,7 @@ const register = async () => {
   const registerData = {
     "username": username,
     "password": password,
+    "email":email
   };
 
   try {

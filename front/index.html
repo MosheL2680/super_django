@@ -25,11 +25,18 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Shop</a>
+                <a class="nav-link active" aria-current="page" href="index.html">Shop</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="login.html">Login</a>
               </li>
+              <li class="nav-item">
+                    <button class="nav-link" onclick="displayOrderHistory()">orders history</button>
+              </li>
+              <li class="nav-item">
+                <a href="cart.html" class="nav-link" id="yourCart">your cart</a>
+              </li>
+              
               <!-- <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   Dropdown
@@ -42,20 +49,17 @@
                 </ul>
               </li> -->
             </ul>
-            <!-- <form class="d-flex" role="search">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success" type="submit">Search</button>
-            </form> -->
+            </div>
           </div>
         </div>
       </nav>
 
 
 <div id="displayy"></div>
-<hr>
+<!-- <hr>
 <h5 style="margin-left: 10px;">your cart:</h5>
 <div id="cartDisplay"></div>
 <div id="totalPrice"></div>
-<button onclick="checkOut()" class="btn btn-success">checkout</button>
+<button onclick="checkOut()" class="btn btn-success">checkout</button> -->
 </body>
 </html>
