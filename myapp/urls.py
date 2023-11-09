@@ -9,9 +9,10 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('register', views.register),
     path('login/', views.MyTokenObtainPairView.as_view()),
-    path('products', views.ProductsView.as_view()),
+    path('products/', views.ProductsView.as_view()),
+    path('categories', views.CategoriesView.as_view()),
     path('checkout', views.checkOut),
-    path('products/<int:id>', views.ProductsView.as_view()),
+    path('products/<int:catID>', views.ProductsView.as_view()),
     path('history', views.get_orders),
     
 ]

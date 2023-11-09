@@ -106,15 +106,15 @@ def get_orders(request):
 # not really needed for now because i'm using "/admin"
 
 class ProductsView(APIView):
-    def get(self, request, id=None):
-        # if id is not None:
-        #     try:
-        #         product = Product.objects.get(id=id)
-        #         serializer = ProductSerializer(product)
-        #         return Response(serializer.data)
-        #     except Product.DoesNotExist:
-        #         return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
-        # else:
+    def get(self, request, catID=None):
+        if catID is not None:
+            try:
+                products = Product.objects.filter(ctg=catID)
+                serializer = ProductSerializer(products, many=True)
+                return Response(serializer.data)
+            except Product.DoesNotExist:
+                return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
+        else:
             products = Product.objects.all()
             serializer = ProductSerializer(products, many=True)        
             return Response(serializer.data)
@@ -136,12 +136,12 @@ class ProductsView(APIView):
     #     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# class CategoriesView(APIView):
-#     def get(self, request):
-#         # Retrieve all categories
-#         categories = Category.objects.all()
-#         category_serializer = CategorySerializer(categories, many=True)
-#         return Response(category_serializer.data)
+class CategoriesView(APIView):
+    def get(self, request):
+        # Retrieve all categories
+        categories = Category.objects.all()
+        category_serializer = CategorySerializer(categories, many=True)
+        return Response(category_serializer.data)
 
 #     def post(self, request):
 #         # Create a new category
@@ -151,14 +151,14 @@ class ProductsView(APIView):
 #             return Response(category_serializer.data, status=status.HTTP_201_CREATED)
 #         return Response(category_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-#     def put(self, request):
-#         # Update an existing category
-#         category = Category.objects.get(pk=request.data['id'])
-#         category_serializer = CategorySerializer(category, data=request.data, partial=True)
-#         if category_serializer.is_valid():
-#             category_serializer.save()
-#             return Response(category_serializer.data, status=status.HTTP_200_OK)
-#         return Response(category_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # def put(self, request):
+    #     # Update an existing category
+    #     category = Category.objects.get(pk=request.data['id'])
+    #     category_serializer = CategorySerializer(category, data=request.data, partial=True)
+    #     if category_serializer.is_valid():
+    #         category_serializer.save()
+    #         return Response(category_serializer.data, status=status.HTTP_200_OK)
+    #     return Response(category_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 #     def delete(self, request):
 #         # Delete a category by ID
