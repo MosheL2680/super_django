@@ -39,7 +39,4 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         # Add custom columns (user return payload - when login )
         token['username'] = user.username
-        token['emaillll'] = user.email
-        token['blabla'] = "waga baga bbb"
-        # ...
         return token

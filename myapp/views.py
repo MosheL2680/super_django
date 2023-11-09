@@ -7,17 +7,15 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
 from .models import Category, Product, Order, OrederDetail
-from .serializers import CategorySerializer, MyTokenObtainPairSerializer, ProductSerializer, OrderDetailSerializer, OrderSerializer
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from .serializers import CategorySerializer, MyTokenObtainPairSerializer, ProductSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 
 
-# Login
+# Login - get token with payload from sirializer
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
-
 
 
 # Register - get username & pass and create new user
@@ -27,6 +25,7 @@ def register(req):
     return Response({"user":"created successfuly"})
 
 
+# get cart from user and save it to Order and OrderDetail
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def checkOut(req):
@@ -103,102 +102,71 @@ def get_orders(request):
     return Response(response_data)
 
 
-# @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
-# def get_orders(request):
-#     user = request.user
-#     orders = user.order_set.all()
-
-#     orders_data = []
-    
-#     for order in orders:
-#         order_details = OrederDetail.objects.filter(order=order)
-#         order_serializer = OrderDetail
-#         Serializer(order_details, many=True)
-#         order_data = {
-#             "order_id": order.id,
-#             "order_date": order.orderDate,
-#             "order_details": order_serializer.data
-#         }
-#         orders_data.append(order_data)
-
-#     user_data = {
-#         "username": user.username,
-#         "email": user.email,
-#     }
-    
-#     response_data = {
-#         "user": user_data,
-#         "orders": orders_data
-#     }
-
-#     return Response(response_data)
-
-
-
 # Full CRUD using serializer for product & categoy models. 
 # not really needed for now because i'm using "/admin"
 
-class CategoriesView(APIView):
-    def get(self, request):
-        # Retrieve all categories
-        categories = Category.objects.all()
-        category_serializer = CategorySerializer(categories, many=True)
-        return Response(category_serializer.data)
-
-    def post(self, request):
-        # Create a new category
-        category_serializer = CategorySerializer(data=request.data)
-        if category_serializer.is_valid():
-            category_serializer.save()
-            return Response(category_serializer.data, status=status.HTTP_201_CREATED)
-        return Response(category_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def put(self, request):
-        # Update an existing category
-        category = Category.objects.get(pk=request.data['id'])
-        category_serializer = CategorySerializer(category, data=request.data, partial=True)
-        if category_serializer.is_valid():
-            category_serializer.save()
-            return Response(category_serializer.data, status=status.HTTP_200_OK)
-        return Response(category_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request):
-        # Delete a category by ID
-        try:
-            category = Category.objects.get(pk=request.data['id'])
-            category.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except Category.DoesNotExist:
-            return Response({'error': 'Category not found'}, status=status.HTTP_404_NOT_FOUND)
-
-
 class ProductsView(APIView):
     def get(self, request, id=None):
-        if id is not None:
-            try:
-                product = Product.objects.get(id=id)
-                serializer = ProductSerializer(product)
-                return Response(serializer.data)
-            except Product.DoesNotExist:
-                return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
-        else:
+        # if id is not None:
+        #     try:
+        #         product = Product.objects.get(id=id)
+        #         serializer = ProductSerializer(product)
+        #         return Response(serializer.data)
+        #     except Product.DoesNotExist:
+        #         return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
+        # else:
             products = Product.objects.all()
             serializer = ProductSerializer(products, many=True)        
             return Response(serializer.data)
-    def post(self, request):
-        serializer = ProductSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    def put(self, request):
-        product = Product.objects.get(id=id)
-        serializer = ProductSerializer(product, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-    def delete(self, request):
-        product = Product.objects.get(id=id)
-        product.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    # def post(self, request):
+    #     serializer = ProductSerializer(data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # def put(self, request):
+    #     product = Product.objects.get(id=id)
+    #     serializer = ProductSerializer(product, data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data)
+    # def delete(self, request):
+    #     product = Product.objects.get(id=id)
+    #     product.delete()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# class CategoriesView(APIView):
+#     def get(self, request):
+#         # Retrieve all categories
+#         categories = Category.objects.all()
+#         category_serializer = CategorySerializer(categories, many=True)
+#         return Response(category_serializer.data)
+
+#     def post(self, request):
+#         # Create a new category
+#         category_serializer = CategorySerializer(data=request.data)
+#         if category_serializer.is_valid():
+#             category_serializer.save()
+#             return Response(category_serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(category_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#     def put(self, request):
+#         # Update an existing category
+#         category = Category.objects.get(pk=request.data['id'])
+#         category_serializer = CategorySerializer(category, data=request.data, partial=True)
+#         if category_serializer.is_valid():
+#             category_serializer.save()
+#             return Response(category_serializer.data, status=status.HTTP_200_OK)
+#         return Response(category_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#     def delete(self, request):
+#         # Delete a category by ID
+#         try:
+#             category = Category.objects.get(pk=request.data['id'])
+#             category.delete()
+#             return Response(status=status.HTTP_204_NO_CONTENT)
+#         except Category.DoesNotExist:
+#             return Response({'error': 'Category not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
