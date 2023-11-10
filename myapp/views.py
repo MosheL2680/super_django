@@ -82,10 +82,12 @@ def get_orders(request):
 
         for detail in order_details:
             product = Product.objects.get(id=detail.product.id)
-            order_data["order_details"].append({
+            product_data = {
                 "product_desc": product.desc,
-                "quantity": detail.quantity
-            })
+                "quantity": detail.quantity,
+                "product_image": product.img.url if product.img else ''  # Check and access the image URL field
+            }
+            order_data["order_details"].append(product_data)
 
         orders_data.append(order_data)
 
@@ -100,6 +102,7 @@ def get_orders(request):
     }
 
     return Response(response_data)
+
 
 
 # Full CRUD using serializer for product & categoy models. 
@@ -118,12 +121,12 @@ class ProductsView(APIView):
             products = Product.objects.all()
             serializer = ProductSerializer(products, many=True)        
             return Response(serializer.data)
-    # def post(self, request):
-    #     serializer = ProductSerializer(data=request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request):
+        serializer = ProductSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     # def put(self, request):
     #     product = Product.objects.get(id=id)
     #     serializer = ProductSerializer(product, data=request.data)
