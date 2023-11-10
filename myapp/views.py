@@ -84,6 +84,7 @@ def get_orders(request):
             product = Product.objects.get(id=detail.product.id)
             product_data = {
                 "product_desc": product.desc,
+                "product_price": product.price,
                 "quantity": detail.quantity,
                 "product_image": product.img.url if product.img else ''  # Check and access the image URL field
             }
