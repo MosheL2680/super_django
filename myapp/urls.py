@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 from . import views
-# from rest_framework_simplejwt.views import TokenObtainPairView
+from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -9,6 +9,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('register', views.register),
     path('login/', views.MyTokenObtainPairView.as_view()),
+    path('logout/', auth_views.LogoutView.as_view()),
     path('products/', views.ProductsView.as_view()),
     path('categories', views.CategoriesView.as_view()),
     path('checkout', views.checkOut),
