@@ -147,13 +147,13 @@ class CategoriesView(APIView):
         category_serializer = CategorySerializer(categories, many=True)
         return Response(category_serializer.data)
 
-#     def post(self, request):
-#         # Create a new category
-#         category_serializer = CategorySerializer(data=request.data)
-#         if category_serializer.is_valid():
-#             category_serializer.save()
-#             return Response(category_serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(category_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request):
+        # Create a new category
+        category_serializer = CategorySerializer(data=request.data)
+        if category_serializer.is_valid():
+            category_serializer.save()
+            return Response(category_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(category_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # def put(self, request):
     #     # Update an existing category
