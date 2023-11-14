@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
 from .models import Category, Product, Order, OrederDetail
-from .serializers import CategorySerializer, MyTokenObtainPairSerializer, ProductSerializer
+from .serializers import CategorySerializer, MyTokenObtainPairSerializer, ProductSerializer, UserSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.core.mail import send_mail
 
@@ -22,6 +22,24 @@ class MyTokenObtainPairView(TokenObtainPairView):
 def register(req):
     User.objects.create_user(username=req.data["username"], password=req.data["password"], email=req.data["email"])
     return Response({"user":"created successfuly"})
+ 
+
+# @Route to upd user details
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_user_details(request):
+    user = request.user
+    data = {
+        'username': request.data.get('username', user.username),
+        'password': request.data.get('password', user.password),
+        'email': request.data.get('email', user.email),
+    }
+    serializer = UserSerializer(user, data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 # Helper function to send mail receipt
 def send_mail_receipt(user, user_cart, total_price):
