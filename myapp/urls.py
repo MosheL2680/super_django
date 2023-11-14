@@ -15,7 +15,6 @@ urlpatterns = [
     path('checkout', views.checkOut),
     path('products/<int:catID>', views.ProductsView.as_view()),
     path('history', views.get_orders),
-    
 ]
 
 

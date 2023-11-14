@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-09kj^rc1u2@z-u3#(jlfo8bk_2i74*fu$hjhyfz3d&5=2d5z)b'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 # False
 ALLOWED_HOSTS = ['*']
 
@@ -168,8 +168,7 @@ MEDIA_URL = '/images/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
    ]
-
-
+1
 
 
 MEDIA_ROOT = BASE_DIR / 'static/images'
@@ -180,3 +179,10 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'moshelubetski@gmail.com'
+EMAIL_HOST_PASSWORD = 'jaim nujq will wmki'
+RECIPIENT_ADDRESS = 'moshelubetzki@icloud.com'

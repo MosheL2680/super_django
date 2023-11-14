@@ -1,5 +1,3 @@
-from decimal import Decimal
-import json
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from rest_framework.views import APIView
@@ -9,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Category, Product, Order, OrederDetail
 from .serializers import CategorySerializer, MyTokenObtainPairSerializer, ProductSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django.core.mail import send_mail
 
 
 
@@ -23,6 +22,25 @@ class MyTokenObtainPairView(TokenObtainPairView):
 def register(req):
     User.objects.create_user(username=req.data["username"], password=req.data["password"], email=req.data["email"])
     return Response({"user":"created successfuly"})
+
+# Helper function to send mail receipt
+def send_mail_receipt(user, user_cart, total_price):
+    subject = f"Your Receipt, {user}"
+
+    # Format the products in a nice way
+    products_info = ""
+    for product in user_cart:
+        products_info += f"\n- {product['amount']} x {product['desc']} (${product['price']} each)"
+
+    message = f"Thank you for your order! Here is the summary:\n\nYou ordered:{products_info}\n\nTotal payment: ${total_price}"
+
+    send_mail(
+        subject,
+        message,
+        "moshelubetski@gmail.com",
+        [user.email],
+        fail_silently=False,
+    )
 
 
 # get cart from user and save it to Order and OrderDetail
@@ -59,6 +77,11 @@ def checkOut(req):
 
     order.total_price = total_price
     order.save()
+    # Call the helper function to send email
+    try:
+        send_mail_receipt(user, cart_data, total_price)
+    except Exception as e:
+        return Response({"error": f"An error occurred while sending the email: {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return Response("order saved fucking successfuly", status=status.HTTP_201_CREATED)
 
@@ -172,5 +195,3 @@ class CategoriesView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Category.DoesNotExist:
             return Response({'error': 'Category not found'}, status=status.HTTP_404_NOT_FOUND)
-
-
