@@ -4,8 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
-from .models import Category, Product, Order, OrederDetail
-from .serializers import CategorySerializer, MyTokenObtainPairSerializer, ProductSerializer, UserSerializer
+from .models import Category, Product, Order, OrderDetail
+from .serializers import CategorySerializer, MyTokenObtainPairSerializer, OrderSerializer, ProductSerializer, UserSerializer, OrderDetailSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.core.mail import send_mail
 
@@ -15,6 +15,43 @@ from django.core.mail import send_mail
 # Login - get token with payload from sirializer
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+from django.contrib.auth.models import User
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+
+@api_view(['POST', 'PUT'])
+def register_or_update_user(req):
+    if req.method == 'POST':
+        # Create a new user
+        User.objects.create_user(
+            username=req.data["username"],
+            password=req.data["password"],
+            email=req.data["email"]
+        )
+        return Response({"user": "created successfully"}, status=status.HTTP_201_CREATED)
+    elif req.method == 'PUT':
+        # Update an existing user
+        username = req.data.get("username")
+        password = req.data.get("password")
+        email = req.data.get("email")
+
+        # Assuming you identify the user by username, you can change it to the appropriate identifier
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Update user fields
+        if password:
+            user.set_password(password)
+        if email:
+            user.email = email
+
+        user.save()
+
+        return Response({"user": "updated successfully"})
 
 
 # Register - get username & pass and create new user
@@ -28,6 +65,7 @@ def register(req):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_user_details(request):
+    print(request.data)
     user = request.user
     data = {
         'username': request.data.get('username', user.username),
@@ -55,7 +93,7 @@ def send_mail_receipt(user, user_cart, total_price):
     send_mail(
         subject,
         message,
-        "moshelubetski@gmail.com",
+        "mosheshop.super@gmail.com",
         [user.email],
         fail_silently=False,
     )
@@ -89,7 +127,7 @@ def checkOut(req):
         if quantity <= 0:
             return Response("Invalid quantity. Quantity must be greater than 0.", status=status.HTTP_400_BAD_REQUEST)
 
-        OrederDetail.objects.create(order=order, product=product, quantity=quantity)
+        OrderDetail.objects.create(order=order, product=product, quantity=quantity)
 
         total_price += product.price * quantity
 
@@ -114,7 +152,7 @@ def get_orders(request):
     orders_data = []
     
     for order in orders:
-        order_details = OrederDetail.objects.filter(order=order)
+        order_details = OrderDetail.objects.filter(order=order)
         order_data = {
             "order_id": order.id,
             "order_date": order.orderDate,

@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-from .models import Category, Product, Order, OrederDetail
+from .models import Category, Product, Order, OrderDetail
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.models import User
 
@@ -17,20 +17,34 @@ class CategorySerializer(ModelSerializer):
         model = Category
         fields = '__all__'
         
-class OrderSerializer(ModelSerializer):
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+class OrderDetailSerializer(serializers.ModelSerializer):
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), required=True)
+    quantity = serializers.IntegerField(required=True)  # You can adjust the default value as needed
+
+    class Meta:
+        model = OrderDetail
+        fields = ['quantity', 'product']
+
+class OrderSerializer(serializers.ModelSerializer):
+    order_details = OrderDetailSerializer(many=True, required=False)
+
     class Meta:
         model = Order
-        fields = '__all__'
+        fields = ['user', 'orderDate', 'total_price', 'order_details']
+
     def create(self, validated_data):
-        user = self.context['user']
-        print(user)
-        return Order.objects.create(**validated_data,user=user)
-    
-    
-class OrderDetailSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrederDetail
-        fields = '__all__'
+        order_details_data = validated_data.pop('order_details', [])
+        order = Order.objects.create(**validated_data)
+
+        for order_detail_data in order_details_data:
+            OrderDetail.objects.create(order=order, **order_detail_data)
+
+        return order
         
         
 
