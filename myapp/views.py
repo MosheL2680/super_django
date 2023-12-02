@@ -162,6 +162,7 @@ def get_orders(request):
         for detail in order_details:
             product = Product.objects.get(id=detail.product.id)
             product_data = {
+                "product_id":product.id,
                 "product_desc": product.desc,
                 "product_price": product.price,
                 "quantity": detail.quantity,
