@@ -1,4 +1,3 @@
-from base64 import urlsafe_b64encode
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
@@ -10,22 +9,11 @@ from .models import Category, Product, Order, OrderDetail
 from .serializers import CategorySerializer, MyTokenObtainPairSerializer, OrderSerializer, ProductSerializer, UserSerializer, OrderDetailSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.core.mail import send_mail
-from django.contrib.auth import get_user_model
-from django.contrib.auth.views import PasswordResetConfirmView
 from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 from django.shortcuts import get_object_or_404
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
 from django.core.mail import send_mail
-from django.urls import reverse
-from django.contrib.auth.models import User
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
-from django.contrib import messages
 
 
 
@@ -199,16 +187,6 @@ def get_orders(request):
     return Response(response_data)
 
 
-from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_text
-from django.core.mail import send_mail
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
-
 @api_view(['POST'])
 def forgot_password(request):
     email = request.data.get('email')
@@ -221,30 +199,17 @@ def forgot_password(request):
     token = default_token_generator.make_token(user)
 
     # Create a password reset link with the token
-    reset_url = f"{request.build_absolute_uri('/')[:-1]}/password-reset-confirm/{uidb64}/{token}/"
+    # reset_url = f"{request.build_absolute_uri('/')[:-1]}/password-reset-confirm/{uidb64}/{token}/"
 
     # Send an email to the user with the reset link
     subject = "Password Reset"
-    message = f"Click the following link to reset your password: {reset_url}"
+    message = f"Click the following link to reset your password: Not implemented yet"# {reset_url}"
     from_email = "noreply@example.com"  # Update with your email
     to_email = [user.email]
     
     send_mail(subject, message, from_email, to_email, fail_silently=False)
 
     return Response({"message": "Password reset email sent successfully"}, status=status.HTTP_200_OK)
-
-User = get_user_model()
-
-class CustomPasswordResetConfirmView(PasswordResetConfirmView):
-    template_name = 'your_template_name/password_reset_confirm.html'  # Update with your template path
-
-    def form_valid(self, form):
-        messages.success(self.request, 'Password has been reset successfully. You can now log in with your new password.')
-        return super().form_valid(form)
-
-    def form_invalid(self, form):
-        messages.error(self.request, 'Invalid password reset link. Please try again.')
-        return super().form_invalid(form)
 
 
 # Full CRUD using serializer for product & categoy models. 
