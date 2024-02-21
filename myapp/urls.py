@@ -15,6 +15,7 @@ urlpatterns = [
     path('categories', views.CategoriesView.as_view()),
     path('checkout', views.checkOut),
     path('products/<int:catID>', views.ProductsView.as_view()),
+    path('products/delete/<int:id>', views.ProductsView.as_view()),
     path('history', views.get_orders),
     path('upduser', views.update_user_details),
 ]

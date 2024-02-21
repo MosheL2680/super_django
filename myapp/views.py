@@ -14,6 +14,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
+from django.core.exceptions import ObjectDoesNotExist
 
 
 
@@ -240,10 +241,14 @@ class ProductsView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-    def delete(self, request):
-        product = Product.objects.get(id=id)
+    def delete(self, request, id):
+        try:
+            product = Product.objects.get(id=id)
+        except ObjectDoesNotExist:
+            return Response({"error": f"Product not found with id {id}"})
+        
         product.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "Deleted successfully"})
 
 
 class CategoriesView(APIView):
