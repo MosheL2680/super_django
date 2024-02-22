@@ -1,16 +1,17 @@
 from django.contrib import admin
 from django.urls import path
-from . import views
-from django.contrib.auth import views as auth_views
+from .views import views
+from django.contrib.auth import views as authViews
 from django.conf import settings
 from django.conf.urls.static import static
+from .views import views, auth_views
 
 
 urlpatterns = [
-    path('register', views.register_or_update_user),
-    path('login/', views.MyTokenObtainPairView.as_view()),
-    path('logout/', auth_views.LogoutView.as_view()),
-    path('forgotpass', views.forgot_password, name='forgot_password'),
+    path('register', auth_views.register_or_update_user),
+    path('login/', auth_views.MyTokenObtainPairView.as_view()),
+    path('logout/', authViews.LogoutView.as_view()),
+    path('forgotpass', auth_views.forgot_password, name='forgot_password'),
     path('products/', views.ProductsView.as_view()),
     path('categories', views.CategoriesView.as_view()),
     path('checkout', views.checkOut),
@@ -18,7 +19,7 @@ urlpatterns = [
     path('products/delete/<int:id>', views.ProductsView.as_view()),
     path('products/update/<int:id>', views.ProductsView.as_view()),
     path('history', views.get_orders),
-    path('upduser', views.update_user_details),
+    path('upduser', auth_views.update_user_details),
 ]
 
 
