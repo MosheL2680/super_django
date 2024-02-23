@@ -8,7 +8,7 @@ from .views import views, auth_views
 
 
 urlpatterns = [
-    path('register', auth_views.register_or_update_user),
+    path('register/<int:id>', auth_views.register),
     path('login/', auth_views.MyTokenObtainPairView.as_view()),
     path('logout/', authViews.LogoutView.as_view()),
     path('forgotpass', auth_views.forgot_password, name='forgot_password'),

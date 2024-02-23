@@ -29,8 +29,8 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 
 # Route to create new user
-@api_view(['POST', 'PUT'])
-def register_or_update_user(req):
+@api_view(['POST'])
+def register(req):
     if req.method == 'POST':
         # Create a new user
         User.objects.create_user(
@@ -40,26 +40,7 @@ def register_or_update_user(req):
         )
         logger.info("User registered successfully") #svae info to logger
         return Response({"user": "created successfully"}, status=status.HTTP_201_CREATED)
-    elif req.method == 'PUT':
-        # Update an existing user
-        username = req.data.get("username")
-        password = req.data.get("password")
-        email = req.data.get("email")
-
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        # Update user fields
-        if password:
-            user.set_password(password)
-        if email:
-            user.email = email
-
-        user.save()
-
-        return Response({"user": "updated successfully"})
+  
      
 
 # @Route to upd user details
