@@ -81,5 +81,5 @@ The project should now be accessible at `http://127.0.0.1:8000/`.
 3. Add products to your shopping cart by adjusting the quantity and clicking "Add to cart."
 4. Review the items in your cart and their total price.
 5. Click the "Checkout" button to place an order.
-6. Admin credantials (for editing products in the admin site and more): moshe, 123
+6. Admin credantials (for editing products in the admin site and more): name: admin, password: 123
 

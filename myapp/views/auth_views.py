@@ -51,7 +51,6 @@ def update_user_details(request):
     user = request.user
     data = {
         'username': request.data.get('username', user.username),
-        'password': request.data.get('password', user.password),
         'email': request.data.get('email', user.email),
     }
     serializer = UserSerializer(user, data=data)
