@@ -8,8 +8,6 @@ from django.contrib.auth.models import User
 # serializers for my 4 models
 
 class ProductSerializer(ModelSerializer):
-    # img = serializers.ImageField()
-
     class Meta:
         model = Product
         fields = '__all__'
@@ -82,3 +80,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+    
+class UserUpdateSerializer(serializers.Serializer):
+    name = serializers.CharField(required=False)
+    email = serializers.EmailField(required=False)

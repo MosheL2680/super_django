@@ -74,6 +74,21 @@ To run this Django project, follow these steps:
 
 The project should now be accessible at `http://127.0.0.1:8000/`.
 
+
+### Running with Docker
+
+1. Build the Docker image:
+
+    ```bash
+    docker build -t mydjangoapp .
+
+2. Run the Docker container, mapping port 8000 from the container to the host machine:
+
+    ```bash
+    docker run -p 8000:8000 mydjangoapp
+
+
+
 ## Usage
 
 1. Run the main shop page (index.html) with the "default browser" extensin.
@@ -81,5 +96,5 @@ The project should now be accessible at `http://127.0.0.1:8000/`.
 3. Add products to your shopping cart by adjusting the quantity and clicking "Add to cart."
 4. Review the items in your cart and their total price.
 5. Click the "Checkout" button to place an order.
-6. Admin credantials (for editing products in the admin site and more): name: admin, password: 123
+6. Admin credentials (for editing products in the admin site and more): name: admin, password: 123
 

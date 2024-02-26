@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
 from myapp.views.utils import log_execution_time, send_mail_receipt
-from ..serializers import   MyTokenObtainPairSerializer, UserSerializer
+from ..serializers import   MyTokenObtainPairSerializer, UserSerializer, UserUpdateSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
@@ -43,20 +43,39 @@ def register(req):
   
      
 
-# @Route to upd user details
+# # @Route to upd user details
+# @api_view(['PUT'])
+# @permission_classes([IsAuthenticated])
+# def update_user_details(request):
+#     print(request.data)
+#     user = request.user
+#     data = {
+#         'username': request.data.get('username', user.username),
+#         'email': request.data.get('email', user.email),
+#     }
+#     serializer = UserSerializer(user, data=data)
+#     if serializer.is_valid():
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_user_details(request):
-    print(request.data)
     user = request.user
-    data = {
-        'username': request.data.get('username', user.username),
-        'email': request.data.get('email', user.email),
-    }
-    serializer = UserSerializer(user, data=data)
+    serializer = UserUpdateSerializer(data=request.data)
+
     if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        if 'name' in serializer.validated_data:
+            user.name = serializer.validated_data['name']
+        if 'email' in serializer.validated_data:
+            user.email = serializer.validated_data['email']
+
+        user.save()
+
+        return Response({'message': 'User details updated successfully'}, status=status.HTTP_200_OK)
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
