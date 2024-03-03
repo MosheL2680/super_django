@@ -6,6 +6,49 @@ import logging
 import time
 from django.core.mail import send_mail
 from rest_framework.permissions import BasePermission
+import implicit
+import pandas as pd
+from scipy.sparse import coo_matrix
+from ..models import Order, OrderDetail
+
+
+# Helper function for product recommendations
+def suggest_products(user_id):
+    # Load order data
+    orders = Order.objects.filter(user=user_id)
+
+    data = []
+    for order in orders:
+        order_details = OrderDetail.objects.filter(order=order)
+        for detail in order_details:
+            data.append({'user': user_id, 'item': detail.product.id})  # No explicit rating needed
+
+    # Create a user-item matrix
+    df = pd.DataFrame(data)
+    df['value'] = 1  # Add a column for the ratings (1 for interaction)
+    user_item_matrix = coo_matrix((df['value'], (df['user'], df['item'])))
+
+
+
+    # Use implicit for collaborative filtering
+    model = implicit.als.AlternatingLeastSquares(factors=50, regularization=0.1, iterations=50)
+    model.fit(user_item_matrix.T)
+
+    # Get user's product interactions
+    user_interactions = user_item_matrix.T.tocsr()[user_id]
+
+    # Recommend products
+    recommended_products = model.recommend(user_id, user_item_matrix, N=5, filter_already_liked_items=False)
+
+    # Check if recommended_products is a tuple, and convert it to a list
+    if isinstance(recommended_products, tuple):
+        recommended_products = list(zip(recommended_products[0], recommended_products[1]))
+
+    # Return only product IDs
+    return [product_id for product_id, _ in recommended_products]
+
+
+
 
 # A decorator that check how much time the function tooks
 def log_execution_time(logger, message):

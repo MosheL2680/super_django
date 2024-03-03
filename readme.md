@@ -9,6 +9,7 @@
 5. [Usage](#usage)
 
 
+
 ## Project Description
 
 The project is a django restapi application with a basic web-front, all together providing a simple online shop with the following main components:
@@ -91,7 +92,7 @@ The project should now be accessible at `http://127.0.0.1:8000/`.
 
 ## Usage
 
-1. Run the main shop page (index.html) with the "default browser" extensin.
+1. Run the React app (see more explanation in the front directory's README file) 
 2. Register a new user account or log in to an existing account.
 3. Add products to your shopping cart by adjusting the quantity and clicking "Add to cart."
 4. Review the items in your cart and their total price.

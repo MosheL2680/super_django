@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
-from myapp.views.utils import log_execution_time, send_mail_receipt
+from myapp.views.utils import log_execution_time, send_mail_receipt, suggest_products
 from ..models import Category, Product, Order, OrderDetail
 from ..serializers import CategorySerializer, MyTokenObtainPairSerializer, OrderSerializer, ProductSerializer, UserSerializer, OrderDetailSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -67,7 +67,7 @@ def checkOut(req):
     return Response("order saved fucking successfuly", status=status.HTTP_201_CREATED)
 
 
-# Route to get user's orders history
+# Route to get user's orders history, including AI recommendations
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_orders(request):
@@ -99,7 +99,17 @@ def get_orders(request):
 
     user_data = {"username": user.username,"email": user.email,}
     
-    response_data = {"user": user_data,"orders": orders_data }
+     # Add recommendations to the response
+    recommendations = suggest_products(user.id)
+    recommended_products = Product.objects.filter(id__in=recommendations)
+    recommended_data = [{
+        "product_id": product.id,
+        "product_desc": product.desc,
+        "product_price": product.price,
+        "product_image": product.img.url if product.img else ''
+    } for product in recommended_products]
+    
+    response_data = {"user": user_data,"orders": orders_data, "recommendations": recommended_data }
 
     return Response(response_data)
 
