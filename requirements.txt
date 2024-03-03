@@ -19,3 +19,4 @@ sqlparse==0.4.4
 threadpoolctl==3.3.0
 tqdm==4.66.2
 tzdata==2023.3
+scipy==1.10.1
